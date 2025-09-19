@@ -162,7 +162,7 @@ const EventSignup = ({ event, onSubmit, className }: EventSignupProps) => {
   // This is the component we will display on the page
   return (
     <section
-      className={`w-full max-w-lg mx-0 bg-gray-100 rounded-2xl p-6 ${
+      className={`w-full max-w-lg mx-0 bg-zinc-100 rounded-2xl p-6 ${
         className ?? ""
       }`}
     >
@@ -276,13 +276,13 @@ const EventSignup = ({ event, onSubmit, className }: EventSignupProps) => {
         </fieldset>
 
         {/* Making sure the user acknowledges policy before submitting */}
-        <label className="relative z-10 flex items-center gap-2 text-sm cursor-pointer">
+        <label className="group relative z-10 flex items-center gap-2 text-sm cursor-pointer rounded-lg px-2 py-1 transition-colors hover:bg-orange-50/40">
           <input
             id="acknowledgment"
             type="checkbox"
             checked={acknowledged}
             onChange={(e) => setAcknowledged(e.target.checked)}
-            className="w-7 h-7 accent-black border border-gray-400 rounded focus:outline-none focus:ring-0 hover:border-black transition-color"
+            className="w-7 h-7 accent-black border border-gray-400 rounded bg-white focus:outline-none focus:ring-0 hover:border-black group-hover:border-orange-400 transition-colors"
           />
           <span className="text-gray-600 leading-5 text-xs">
             <span className="text-orange-500 mr-1">*</span>
@@ -306,7 +306,7 @@ const EventSignup = ({ event, onSubmit, className }: EventSignupProps) => {
           title={!acknowledged ? "Please accept policies to submit" : undefined}
           className={`relative w-full py-3 rounded-full font-semibold overflow-hidden transition-colors duration-300 focus:outline-none ${
             !acknowledged
-              ? "bg-gray-200 text-gray-500 cursor-default"
+              ? "bg-zinc-200 text-gray-500 cursor-default"
               : isSubmitted
               ? "bg-black text-white cursor-default"
               : "group bg-black text-white"
