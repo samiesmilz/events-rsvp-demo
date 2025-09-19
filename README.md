@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Elevation | Events RSVP - Demo
 
-## Getting Started
+## Overview
 
-First, run the development server:
+A demo of the RSVP signup component.
+
+## Data Decisions
+
+- Local storage first.
+- I save RSVPs to `localStorage` as requested so the list survives refreshes.
+- Timestamp everything. Each RSVP carries a timestamp so I we sort or audit later without changing the data shape.
+- I used one event objectso that I can swap in API data or CMS content later easily.
+
+## Running It Locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit http://localhost:3000 to start on the welcome screen.
+Head to `/events` to interact with the RSVP experience.
+I added "Reset (Dev Only)" link to clear stored submissions - for development use only.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## For production, l would...
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Swap the static event object for an api call to highlight how the component scales.
+- Add form validation for additional guest details once the flow expands beyond a counter.
+- Sync submissions to an API so multiple devices stay in step.
 
-## Learn More
+## At glance screenshots
 
-To learn more about Next.js, take a look at the following resources:
+![Welcome screen](public/assets/welcome-screen-demo.png)
+Just an entry point to test the demo
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+![Event details](public/assets/events-details-demo.png)
+Initial State of the Component and page before processing data.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+![Stored RSVPs](public/assets/processed-rsvp-demo.png)
+What proessed RSVPs look like as requested.
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```text
+src/
+  app/
+    layout.tsx        # Root layout + metadata
+    page.tsx          # Welcome screen
+    events/
+      page.tsx        # RSVP page; owns submission state
+  components/
+    EventSignup.tsx   # Form UI and submission handler
+  hooks/
+    localStorage.ts   # Shared persistence helper
+public/
+  assets/             # README screenshots + favicon
+```
