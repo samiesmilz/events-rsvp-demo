@@ -17,7 +17,7 @@ export interface EventData {
 }
 
 /**
- *  I anticipate that the event may have growing or shrinking fields,
+ *  Anticipating that the event may have growing or shrinking fields,
  *  a single prop object could help scale props better.
  */
 export interface EventSignupProps {
@@ -159,7 +159,6 @@ const EventSignup = ({ event, onSubmit, className }: EventSignupProps) => {
   const isInteractive = acknowledged && !isSubmitted;
   const isDisabled = !isInteractive;
 
-  // This is the component we will display on the page
   return (
     <section
       className={`w-full max-w-lg mx-0 bg-zinc-100 rounded-2xl p-6 ${
