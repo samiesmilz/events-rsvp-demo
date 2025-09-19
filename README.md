@@ -19,8 +19,9 @@ npm run dev
 ```
 
 Visit http://localhost:3000 to start on the welcome screen.
-Head to `/events` to interact with the RSVP experience.
-I added "Reset (Dev Only)" link to clear stored submissions - for development use only.
+
+- Head to `/events` to interact with the RSVP experience.
+- I added "Reset function" link to clear stored submissions - for development use only.
 
 ## For production, l would...
 
@@ -56,3 +57,7 @@ public/
 ├─ assets/                // README screenshots
 └─ favicon.png            // App favicon
 ```
+
+## Thank you
+
+- Samuel Abinsinguza
