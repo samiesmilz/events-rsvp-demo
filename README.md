@@ -8,8 +8,8 @@ A demo of the RSVP signup component.
 
 - Local storage first.
 - I save RSVPs to `localStorage` as requested so the list survives refreshes.
-- Timestamp everything. Each RSVP carries a timestamp so I we sort or audit later without changing the data shape.
-- I used one event objectso that I can swap in API data or CMS content later easily.
+- Each RSVP carries a timestamp so we sort or audit later without changing the data shape.
+- I used one event object so that it's easy to swap in API data or CMS content later easily.
 
 ## Running It Locally
 
@@ -30,28 +30,29 @@ I added "Reset (Dev Only)" link to clear stored submissions - for development us
 
 ## At glance screenshots
 
+Just an entry point to test the rsvp demo
 ![Welcome screen](public/assets/welcome-screen-demo.png)
-Just an entry point to test the demo
 
-![Event details](public/assets/events-details-demo.png)
 Initial State of the Component and page before processing data.
+![Event details](public/assets/events-details-demo.png)
 
-![Stored RSVPs](public/assets/processed-rsvp-demo.png)
 What proessed RSVPs look like as requested.
+![Stored RSVPs](public/assets/processed-rsvp-demo.png)
 
 ## Project Structure
 
 ```text
 src/
-  app/
-    layout.tsx        # Root layout + metadata
-    page.tsx          # Welcome screen
-    events/
-      page.tsx        # RSVP page; owns submission state
-  components/
-    EventSignup.tsx   # Form UI and submission handler
-  hooks/
-    localStorage.ts   # Shared persistence helper
+├─ app/
+│  ├─ layout.tsx          // Root layout + metadata setup
+│  ├─ page.tsx            // Welcome screen entry point
+│  └─ events/
+│     └─ page.tsx         // RSVP view that manages submission state
+├─ components/
+│  └─ EventSignup.tsx     // Form surface that raises onSubmit
+├─ hooks/
+│  └─ localStorage.ts     // Shared localStorage persistence helper
 public/
-  assets/             # README screenshots + favicon
+├─ assets/                // README screenshots
+└─ favicon.png            // App favicon
 ```
