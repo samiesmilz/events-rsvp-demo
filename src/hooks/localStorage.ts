@@ -21,10 +21,16 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
   }, [key]);
 
   // Update localStorage when value changes
-  const setStoredValue = (newValue: T) => {
-    // I update state first so the UI reacts immediately, then persist the value
-    setValue(newValue);
-    localStorage.setItem(key, JSON.stringify(newValue));
+  const setStoredValue = (newValue: T | ((prev: T) => T)) => {
+    setValue((prev) => {
+      const nextValue =
+        typeof newValue === "function"
+          ? (newValue as (prevValue: T) => T)(prev)
+          : newValue;
+
+      localStorage.setItem(key, JSON.stringify(nextValue));
+      return nextValue;
+    });
   };
 
   return [value, setStoredValue] as const;
