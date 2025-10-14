@@ -22,7 +22,11 @@ export interface EventData {
  */
 export interface EventSignupProps {
   event: EventData;
-  onSubmit?: (children: number) => void;
+  onSubmit?: (
+    children: number,
+    acknowledgement: boolean
+  ) => Promise<boolean> | boolean;
+  pending?: boolean;
   className?: string;
 }
 
@@ -42,8 +46,24 @@ export const ELEVATION_EVENTS_KEY = "elevation:rsvps";
 const MIN_CHILDREN = 0;
 const MAX_CHILDREN = 6;
 
-const EventSignup = ({ event, onSubmit, className }: EventSignupProps) => {
-  const { venue, address, city, state, zip, date = new Date() } = event;
+// helper function to manage updating the time.
+function useSystemTime(interval = 60000) {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), interval);
+    return () => clearInterval(id);
+  }, [interval]);
+  return now;
+}
+
+const EventSignup = ({
+  event,
+  onSubmit,
+  pending = false,
+  className,
+}: EventSignupProps) => {
+  // NOTE: do NOT default date here (e.g., "= new Date()") because that would "freeze" render time.
+  const { venue, address, city, state, zip, date } = event;
 
   // What we want the component to remember across reloads
   const [childrenCount, setChildrenCount] = useState<number>(0);
@@ -60,13 +80,16 @@ const EventSignup = ({ event, onSubmit, className }: EventSignupProps) => {
     null
   );
 
+  const systemTime = useSystemTime(); // updates every minute
+
   /**
    * After mount...
    * We'll render date and time on the client to avoid hydration warnings
    */
   useEffect(() => {
-    //  Only creating new Date() if date is not provided to avoid infinite re-renders
-    const eventDate = date || new Date();
+    // Only creating new Date() if date is provided; otherwise use the ticking systemTime.
+    const eventDate = date ? new Date(date) : systemTime;
+
     setDisplayDate(
       eventDate.toLocaleDateString("en-US", {
         month: "short",
@@ -81,9 +104,9 @@ const EventSignup = ({ event, onSubmit, className }: EventSignupProps) => {
         timeZoneName: "short",
       })
     );
-  }, []); // I did not add date dependency to prevent infinite loop when using new Date()
+  }, [date, systemTime]); // depend on date (static) or systemTime (live "now")
 
-  // To make sure we keep the number above 0 and not more than 6
+  // To make sure we keep the number at zero or above but not more than 6
   // Example: keepBetween(0, 7, 6) -> 6
   const keepBetween = (min: number, value: number, max: number) => {
     return Math.min(max, Math.max(min, value));
@@ -92,11 +115,11 @@ const EventSignup = ({ event, onSubmit, className }: EventSignupProps) => {
   // Button actions that will change the children count
   const increase = () =>
     setChildrenCount((prev) =>
-      keepBetween(prev + 1, MIN_CHILDREN, MAX_CHILDREN)
+      keepBetween(MIN_CHILDREN, prev + 1, MAX_CHILDREN)
     );
   const decrease = () =>
     setChildrenCount((prev) =>
-      keepBetween(prev - 1, MIN_CHILDREN, MAX_CHILDREN)
+      keepBetween(MIN_CHILDREN, prev - 1, MAX_CHILDREN)
     );
 
   /**
@@ -104,11 +127,22 @@ const EventSignup = ({ event, onSubmit, className }: EventSignupProps) => {
    * - We'll check to see if the required box has been checked
    * - Then we'll append the RSVP submission and reset the form
    */
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!acknowledged) return;
+    if (!acknowledged || pending) return;
 
-    if (onSubmit) onSubmit(childrenCount);
+    let submitSucceeded = true;
+
+    if (onSubmit) {
+      try {
+        const result = await onSubmit(childrenCount, acknowledged);
+        submitSucceeded = result !== false;
+      } catch {
+        submitSucceeded = false;
+      }
+    }
+
+    if (!submitSucceeded) return;
 
     // Reset form after successful submission
     setChildrenCount(0);
@@ -156,7 +190,8 @@ const EventSignup = ({ event, onSubmit, className }: EventSignupProps) => {
   };
 
   const isSubmitted = submissionStatus === "submitted";
-  const isInteractive = acknowledged && !isSubmitted;
+  const isBusy = pending === true;
+  const isInteractive = acknowledged && !isSubmitted && !isBusy;
   const isDisabled = !isInteractive;
 
   return (
@@ -302,12 +337,18 @@ const EventSignup = ({ event, onSubmit, className }: EventSignupProps) => {
         <button
           type="submit"
           disabled={isDisabled}
-          title={!acknowledged ? "Please accept policies to submit" : undefined}
-          className={`relative w-full py-3 rounded-full font-semibold overflow-hidden transition-colors duration-300 focus:outline-none ${
+          title={
             !acknowledged
-              ? "bg-zinc-200 text-gray-500 cursor-default"
-              : isSubmitted
+              ? "Please accept policies to submit"
+              : isBusy
+              ? "Submitting..."
+              : undefined
+          }
+          className={`relative w-full py-3 rounded-full font-semibold overflow-hidden transition-colors duration-300 focus:outline-none ${
+            isSubmitted
               ? "bg-black text-white cursor-default"
+              : !acknowledged || isBusy
+              ? "bg-zinc-200 text-gray-500 cursor-default"
               : "group bg-black text-white"
           }`}
         >
@@ -315,7 +356,7 @@ const EventSignup = ({ event, onSubmit, className }: EventSignupProps) => {
             <span className="absolute inset-0 bg-orange-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
           )}
           <span className="relative z-10 flex items-center justify-center gap-2">
-            {isSubmitted ? "Submitted" : "RSVP"}
+            {isSubmitted ? "Submitted" : isBusy ? "Submitting..." : "RSVP"}
             <span
               className={`inline-flex items-center justify-center w-5 h-5 rounded-full ${
                 !acknowledged ? "bg-white/80" : "bg-white"
