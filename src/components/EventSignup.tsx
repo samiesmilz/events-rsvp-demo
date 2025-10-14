@@ -1,20 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { EventData } from "@/types/events";
 import { MapPin, Map, Calendar, Clock, Copy, Check } from "lucide-react";
-
-/**
- * I chose one event object so that this component works for any event
- * source whether details are coming from (API, CMS, or file.)
- */
-export interface EventData {
-  venue: string;
-  address: string;
-  city: string;
-  state: string;
-  zip: string;
-  date?: Date; // if the date is not given, we'll show "now"
-}
 
 /**
  *  Anticipating that the event may have growing or shrinking fields,
@@ -28,15 +16,6 @@ export interface EventSignupProps {
   ) => Promise<boolean> | boolean;
   pending?: boolean;
   className?: string;
-}
-
-/**
- * Saved RSVP that we display in the summary
- */
-export interface Submission {
-  id: number;
-  children: number;
-  timestamp: string; // could be helpful if we need to sort events later.
 }
 
 /** Our storage key */
@@ -196,7 +175,7 @@ const EventSignup = ({
 
   return (
     <section
-      className={`w-full max-w-lg mx-0 bg-zinc-100 rounded-2xl p-6 ${
+      className={`w-full max-w-lg mx-0 bg-zinc-100 rounded-2xl p-6 border border-transparent transition-colors duration-200 hover:border-gray-300 hover:shadow-md ${
         className ?? ""
       }`}
     >

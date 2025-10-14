@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { EventData } from "@/types/events";
 
-const MOCK_ID = "event001";
+const MOCK_ID = "test-event-123";
 
 const MOCK_EVENT: EventData = {
   id: MOCK_ID,
@@ -19,6 +19,7 @@ export async function GET(
 ) {
   const { id } = await context.params;
 
+  // Only the mock event is recognized; everything else will return 404 text.
   if (id !== MOCK_ID) {
     return NextResponse.json({ error: "Event not found" }, { status: 404 });
   }

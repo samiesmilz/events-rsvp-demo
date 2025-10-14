@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-const FEATURED_EVENT_ID = "event001";
+const FEATURED_EVENT_ID = "test-event-123";
 
 const mockEvents = [
   {
@@ -13,14 +13,14 @@ const mockEvents = [
   },
   {
     id: "event002",
-    name: "TBD Event 002",
+    name: "Event 002",
     city: "Coming soon",
     state: "",
     status: "upcoming",
   },
   {
     id: "event003",
-    name: "TBD Event 003",
+    name: "Event 003",
     city: "Coming soon",
     state: "",
     status: "upcoming",

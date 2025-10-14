@@ -9,6 +9,7 @@ import { useLocalStorage } from "@/hooks/localStorage";
 
 const STORAGE_KEY_BASE = "elevation:rsvps";
 
+// This panel wraps the signup card with the event summary and error handling.
 export default function RsvpPanel({ event }: { event: EventData }) {
   const storageKey = `${STORAGE_KEY_BASE}:${event.id}`;
   const [submissions, setSubmissions] = useLocalStorage<Submission[]>(
@@ -18,6 +19,7 @@ export default function RsvpPanel({ event }: { event: EventData }) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
+  // Clearing storage or errors should feel instant, so keeping it simple.
   const resetRsvp = () => {
     setSubmissions([]);
     setError(null);
@@ -47,6 +49,7 @@ export default function RsvpPanel({ event }: { event: EventData }) {
           return false;
         }
 
+        // Successful POST returns the saved record, so we append it locally.
         const next: Submission = data.saved;
         setSubmissions((prev) => [...prev, next]);
         return true;
@@ -63,6 +66,7 @@ export default function RsvpPanel({ event }: { event: EventData }) {
   return (
     <main className="min-h-dvh bg-white pt-15 border-t-orange-500 border-t-2">
       <div className="min-h-dvh flex flex-col">
+        {/* Below lg we stack, at lg+ we split into 7 / 5 columns so the card floats */}
         <div className="flex-1 lg:max-w-5xl lg:mx-auto lg:px-6 lg:py-8 lg:grid lg:grid-cols-12 lg:gap-10">
           {/* Details / summary content */}
           <section
@@ -79,9 +83,9 @@ export default function RsvpPanel({ event }: { event: EventData }) {
 
             {submissions.length > 0 && (
               <ul className="mt-2 space-y-2">
-                {submissions.map((s) => (
-                  <li key={s.id} className="text-sm text-gray-700">
-                    RSVP {s.id} — Children: {s.children}
+                {submissions.map((s, idx) => (
+                  <li key={`${s.timestamp}-${idx}`} className="text-sm text-gray-700">
+                    RSVP {idx + 1} — Children: {s.children}
                     <span className="ml-2 text-xs text-gray-400">
                       {new Date(s.timestamp).toLocaleString()}
                     </span>
@@ -112,7 +116,7 @@ export default function RsvpPanel({ event }: { event: EventData }) {
             )}
           </section>
 
-          {/* Signup card: sticky on desktop, bottom sheet on mobile */}
+          {/* Signup card: mobile keeps it fixed near the bottom; lg+ makes it sticky */}
           <aside className="lg:col-span-5" aria-busy={pending}>
             <div className="fixed bottom-0 left-0 right-0 lg:static">
               <div className="lg:sticky lg:top-6">
